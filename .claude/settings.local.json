@@ -15,7 +15,8 @@
       "Bash(pkill:*)",
       "Bash(npm run dev:*)",
       "Bash(true)",
-      "Bash(ss:*)"
+      "Bash(ss:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

@@ -8,11 +8,11 @@ This is a Next.js 15 color palette generator application that creates Tailwind C
 
 ## Development Setup
 
-The main application is located in the `palette-generator/` directory. Navigate to this directory before running commands.
+The application is located in the project root directory. All commands can be run directly from the root.
 
 ## Commands
 
-All commands should be run from the `palette-generator/` directory:
+All commands should be run from the project root directory:
 
 ```bash
 # Development server with Turbopack
