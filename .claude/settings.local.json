@@ -16,7 +16,9 @@
       "Bash(npm run dev:*)",
       "Bash(true)",
       "Bash(ss:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(node:*)",
+      "Bash(npm run lint)"
     ],
     "deny": []
   }

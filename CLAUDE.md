@@ -65,3 +65,34 @@ The palette generation uses sophisticated color theory:
 - Tailwind CSS v4 for styling
 - Path aliases: `@/*` maps to `src/*`
 - Next.js 15 with React 19
+- Static export enabled for GitHub Pages deployment (`output: 'export'`)
+- Images are unoptimized for static hosting compatibility
+
+## Development Notes
+
+### Color Algorithm Architecture
+
+The core color logic is separated into distinct functions in `src/lib/color-utils.ts`:
+
+- **Color Conversion Pipeline**: `hexToRgb()` → `rgbToHsl()` → `hslToRgb()` → `rgbToHex()`
+- **Palette Generation**: `generatePalette()` creates 11 shades using lightness mapping and saturation adjustments
+- **Semantic Color Logic v2.0**: Enhanced algorithm with conflict detection and fallback system
+  - **8 Color Families**: red, orange, yellow, green, cyan, blue, purple, magenta (covers full 360° spectrum)
+  - **Conflict Detection**: `hasSemanticConflict()` prevents semantically inappropriate colors
+  - **Fallback System**: `SEMANTIC_STRATEGIES` provides primary and fallback hues for each family
+  - **Perceptual Distance**: `calculateColorDistance()` ensures minimum visual separation
+- **Neutral Generation**: `generateNeutralPalette()` creates harmonized grays with subtle base color tinting
+
+### State Management Pattern
+
+The main component (`ColorPalette.tsx`) uses React state to manage:
+- Base color and all generated palettes
+- Individual variation counters for semantic colors (allows refresh without affecting other colors)
+- Clipboard copy feedback with automatic timeout
+
+### Key Features Implementation
+
+- **Click-to-copy**: All color swatches copy hex values to clipboard
+- **Refresh Variations**: Semantic colors can be refreshed individually using variation parameters
+- **Real-time Updates**: All palettes regenerate when base color changes
+- **Error Handling**: Graceful handling of invalid hex colors

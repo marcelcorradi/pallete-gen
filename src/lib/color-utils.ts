@@ -163,70 +163,94 @@ export function getColorTemperature(hue: number): 'warm' | 'cool' {
   return (hue >= 0 && hue <= 180) ? 'warm' : 'cool';
 }
 
-export function getColorFamily(hue: number): 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' {
-  if (hue >= 330 || hue <= 30) return 'red';
-  if (hue > 30 && hue <= 60) return 'orange';
-  if (hue > 60 && hue <= 90) return 'yellow';
-  if (hue > 90 && hue <= 150) return 'green';
-  if (hue > 180 && hue <= 240) return 'blue';
-  return 'purple';
+export function calculateColorDistance(color1: HSL, color2: HSL): number {
+  // Calculate the shortest distance between two hues on the color wheel
+  const hueDiff = Math.min(
+    Math.abs(color1.h - color2.h),
+    360 - Math.abs(color1.h - color2.h)
+  );
+  const satDiff = Math.abs(color1.s - color2.s);
+  const lumDiff = Math.abs(color1.l - color2.l);
+  
+  // Weight hue difference more heavily as it's more perceptually important
+  return (hueDiff * 0.6) + (satDiff * 0.2) + (lumDiff * 0.2);
 }
 
-export function generateSemanticColor(baseColor: string, colorType: 'success' | 'warning' | 'error' | 'info', variation: number = 0): ColorPalette {
-  const rgb = hexToRgb(baseColor);
-  if (!rgb) throw new Error('Invalid hex color');
-  
-  const hsl = rgbToHsl(rgb);
-  const family = getColorFamily(hsl.h);
-  
-  let targetHue: number;
+export function hasSemanticConflict(baseColor: HSL, semanticColor: HSL, minDistance: number = 30): boolean {
+  return calculateColorDistance(baseColor, semanticColor) < minDistance;
+}
+
+export type SemanticType = 'success' | 'warning' | 'error' | 'info';
+
+export interface SemanticStrategy {
+  primary: number;
+  fallback: number;
+}
+
+export interface FamilySemanticMap {
+  success: SemanticStrategy;
+  warning: SemanticStrategy;
+  error: SemanticStrategy;
+  info: SemanticStrategy;
+}
+
+export const SEMANTIC_STRATEGIES: Record<ColorFamily, FamilySemanticMap> = {
+  red: {
+    success: { primary: 120, fallback: 140 },   // Verde -> Verde-azulado
+    warning: { primary: 45, fallback: 60 },     // Laranja -> Amarelo
+    error: { primary: 320, fallback: 300 },     // Magenta -> Roxo
+    info: { primary: 210, fallback: 240 }      // Azul -> Azul-roxo
+  },
+  orange: {
+    success: { primary: 120, fallback: 140 },   // Verde -> Verde-azulado
+    warning: { primary: 60, fallback: 80 },     // Amarelo -> Amarelo-verde
+    error: { primary: 0, fallback: 320 },       // Vermelho -> Magenta
+    info: { primary: 210, fallback: 190 }      // Azul -> Azul-ciano
+  },
+  yellow: {
+    success: { primary: 120, fallback: 100 },   // Verde -> Verde-amarelo
+    warning: { primary: 30, fallback: 15 },     // Laranja -> Vermelho-laranja
+    error: { primary: 0, fallback: 320 },       // Vermelho -> Magenta
+    info: { primary: 210, fallback: 240 }      // Azul -> Azul-roxo
+  },
+  green: {
+    success: { primary: 140, fallback: 160 },   // Verde-azul -> Ciano
+    warning: { primary: 45, fallback: 30 },     // Laranja -> Vermelho-laranja
+    error: { primary: 0, fallback: 320 },       // Vermelho -> Magenta
+    info: { primary: 210, fallback: 240 }      // Azul -> Azul-roxo
+  },
+  cyan: {
+    success: { primary: 120, fallback: 90 },    // Verde -> Verde-amarelo
+    warning: { primary: 35, fallback: 50 },     // Laranja -> Amarelo
+    error: { primary: 0, fallback: 320 },       // Vermelho -> Magenta
+    info: { primary: 210, fallback: 240 }      // Azul -> Azul-roxo
+  },
+  blue: {
+    success: { primary: 120, fallback: 140 },   // Verde -> Verde-azul
+    warning: { primary: 45, fallback: 60 },     // Laranja -> Amarelo
+    error: { primary: 0, fallback: 320 },       // Vermelho -> Magenta
+    info: { primary: 200, fallback: 180 }      // Azul-ciano -> Ciano
+  },
+  purple: {
+    success: { primary: 120, fallback: 140 },   // Verde -> Verde-azul
+    warning: { primary: 45, fallback: 60 },     // Laranja -> Amarelo
+    error: { primary: 0, fallback: 15 },        // Vermelho -> Vermelho-laranja
+    info: { primary: 200, fallback: 180 }      // Azul-ciano -> Ciano
+  },
+  magenta: {
+    success: { primary: 120, fallback: 150 },   // Verde -> Verde-azul
+    warning: { primary: 45, fallback: 60 },     // Laranja -> Amarelo
+    error: { primary: 0, fallback: 15 },        // Vermelho -> Vermelho-laranja
+    info: { primary: 210, fallback: 180 }      // Azul -> Ciano
+  }
+};
+
+export function optimizeSemanticColor(baseHsl: HSL, targetHue: number, colorType: SemanticType): HSL {
+  // Define saturation and lightness multipliers for each semantic color
   let saturationMultiplier: number;
   let lightnessMultiplier: number;
   let minLightness: number;
   
-  // Define base hues for each semantic color based on color family
-  switch (family) {
-    case 'red': // 330°-30°
-      targetHue = colorType === 'error' ? (hsl.h + 315) % 360 :
-                 colorType === 'success' ? (hsl.h + 105) % 360 :
-                 colorType === 'warning' ? (hsl.h + 30) % 360 :
-                 (hsl.h + 185) % 360; // info
-      break;
-    case 'orange': // 30°-60°
-      targetHue = colorType === 'error' ? (hsl.h + 320) % 360 :
-                 colorType === 'success' ? (hsl.h + 105) % 360 :
-                 colorType === 'warning' ? (hsl.h + 30) % 360 :
-                 (hsl.h + 170) % 360; // info
-      break;
-    case 'yellow': // 60°-90°
-      targetHue = colorType === 'error' ? (hsl.h + 270) % 360 :
-                 colorType === 'success' ? (hsl.h + 45) % 360 :
-                 colorType === 'warning' ? (hsl.h - 30 + 360) % 360 :
-                 (hsl.h + 140) % 360; // info
-      break;
-    case 'green': // 90°-150°
-      targetHue = colorType === 'error' ? (hsl.h + 230) % 360 :
-                 colorType === 'success' ? (hsl.h + 10) % 360 :
-                 colorType === 'warning' ? (hsl.h - 60 + 360) % 360 :
-                 (hsl.h + 80) % 360; // info
-      break;
-    case 'blue': // 180°-240°
-      targetHue = colorType === 'error' ? (hsl.h + 170) % 360 :
-                 colorType === 'success' ? (hsl.h - 80 + 360) % 360 :
-                 colorType === 'warning' ? (hsl.h - 150 + 360) % 360 :
-                 (hsl.h + 15) % 360; // info
-      break;
-    case 'purple': // 240°-330°
-      targetHue = colorType === 'error' ? (hsl.h + 80) % 360 :
-                 colorType === 'success' ? (hsl.h - 110 + 360) % 360 :
-                 colorType === 'warning' ? (hsl.h - 180 + 360) % 360 :
-                 (hsl.h - 60 + 360) % 360; // info
-      break;
-    default:
-      throw new Error('Invalid color family');
-  }
-  
-  // Define saturation and lightness multipliers for each semantic color
   switch (colorType) {
     case 'success':
       saturationMultiplier = 0.9;
@@ -250,21 +274,69 @@ export function generateSemanticColor(baseColor: string, colorType: 'success' | 
       break;
   }
   
+  const finalSaturation = Math.min(Math.max(baseHsl.s * saturationMultiplier, 20), 95);
+  const finalLightness = Math.max(baseHsl.l * lightnessMultiplier, minLightness);
+  
+  return {
+    h: targetHue,
+    s: finalSaturation,
+    l: finalLightness
+  };
+}
+
+export type ColorFamily = 'red' | 'orange' | 'yellow' | 'green' | 'cyan' | 'blue' | 'purple' | 'magenta';
+
+export function getColorFamily(hue: number): ColorFamily {
+  if (hue >= 345 || hue < 15) return 'red';      // 345°-15°
+  if (hue >= 15 && hue < 45) return 'orange';    // 15°-45°
+  if (hue >= 45 && hue < 75) return 'yellow';    // 45°-75°
+  if (hue >= 75 && hue < 135) return 'green';    // 75°-135°
+  if (hue >= 135 && hue < 165) return 'cyan';    // 135°-165°
+  if (hue >= 165 && hue < 225) return 'blue';    // 165°-225°
+  if (hue >= 225 && hue < 285) return 'purple';  // 225°-285°
+  return 'magenta';                              // 285°-345°
+}
+
+export function generateSemanticColor(baseColor: string, colorType: SemanticType, variation: number = 0): ColorPalette {
+  const rgb = hexToRgb(baseColor);
+  if (!rgb) throw new Error('Invalid hex color');
+  
+  const baseHsl = rgbToHsl(rgb);
+  const family = getColorFamily(baseHsl.h);
+  
+  // Get semantic strategies for this color family
+  const strategies = SEMANTIC_STRATEGIES[family];
+  const strategy = strategies[colorType];
+  
+  // Try primary color first
+  const primaryHue = strategy.primary;
+  const primarySemanticColor = optimizeSemanticColor(baseHsl, primaryHue, colorType);
+  
   // Apply variation to create different versions
   const hueVariation = (variation * 15) % 30 - 15; // ±15° variation
   const saturationVariation = (variation * 0.1) % 0.2 - 0.1; // ±10% variation
   const lightnessVariation = (variation * 0.05) % 0.1 - 0.05; // ±5% variation
   
-  const finalHue = (targetHue + hueVariation + 360) % 360;
-  const finalSaturation = Math.min(Math.max(hsl.s * (saturationMultiplier + saturationVariation), 20), 95);
-  const finalLightness = Math.max(hsl.l * (lightnessMultiplier + lightnessVariation), minLightness);
+  let finalSemanticColor = {
+    h: (primarySemanticColor.h + hueVariation + 360) % 360,
+    s: Math.min(Math.max(primarySemanticColor.s + (primarySemanticColor.s * saturationVariation), 20), 95),
+    l: Math.max(primarySemanticColor.l + (primarySemanticColor.l * lightnessVariation), primarySemanticColor.l)
+  };
   
-  const semanticColorHex = rgbToHex(hslToRgb({
-    h: finalHue,
-    s: finalSaturation,
-    l: finalLightness
-  }));
+  // Check for semantic conflict
+  if (hasSemanticConflict(baseHsl, finalSemanticColor)) {
+    // Use fallback color
+    const fallbackHue = strategy.fallback;
+    const fallbackSemanticColor = optimizeSemanticColor(baseHsl, fallbackHue, colorType);
+    
+    finalSemanticColor = {
+      h: (fallbackSemanticColor.h + hueVariation + 360) % 360,
+      s: Math.min(Math.max(fallbackSemanticColor.s + (fallbackSemanticColor.s * saturationVariation), 20), 95),
+      l: Math.max(fallbackSemanticColor.l + (fallbackSemanticColor.l * lightnessVariation), fallbackSemanticColor.l)
+    };
+  }
   
+  const semanticColorHex = rgbToHex(hslToRgb(finalSemanticColor));
   return generatePalette(semanticColorHex);
 }
 

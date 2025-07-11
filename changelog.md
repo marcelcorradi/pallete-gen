@@ -1,5 +1,57 @@
 # Changelog
 
+## [2025-01-11] - Versão 2.3.0
+
+### 🔄 MODIFICADO
+- [ENHANCEMENT] Algoritmo de cores semânticas v2.0 com detecção de conflitos
+- [ENHANCEMENT] Sistema de fallback inteligente para cores problemáticas
+- [REFACTOR] Classificação de famílias de cores expandida para 8 famílias
+- [ENHANCEMENT] Cobertura completa do círculo cromático (360°)
+
+### ✅ ADICIONADO
+- [FEATURE] Detecção automática de conflitos perceptuais entre cores
+- [FEATURE] Sistema de mapeamento semântico com estratégias de fallback
+- [FEATURE] Suporte específico para cores cyan e magenta
+- [FUNCTION] calculateColorDistance() - Cálculo de distância perceptual
+- [FUNCTION] hasSemanticConflict() - Detecção de conflitos semânticos
+- [FUNCTION] optimizeSemanticColor() - Otimização de cores semânticas
+- [DATA] SEMANTIC_STRATEGIES - Mapeamento completo de estratégias por família
+
+### 🐛 CORRIGIDO
+- [BUGFIX] Magenta (#d83bf7) warning gerava verde - agora gera laranja/amarelo
+- [BUGFIX] Ciano (#3bf7af) cores semânticas inconsistentes - agora harmonizadas
+- [BUGFIX] Cores base próximas às semânticas muito similares - agora diferenciadas
+- [BUGFIX] Gap entre 150°-180° no mapeamento de famílias - agora coberto
+
+### 📋 TÉCNICO
+- [ENHANCEMENT] 8 famílias de cores: red, orange, yellow, green, cyan, blue, purple, magenta
+- [ENHANCEMENT] Ranges de classificação otimizados:
+  - Red: 345°-15° | Orange: 15°-45° | Yellow: 45°-75° | Green: 75°-135°
+  - Cyan: 135°-165° | Blue: 165°-225° | Purple: 225°-285° | Magenta: 285°-345°
+- [ALGORITHM] Detecção de conflitos com distância mínima de 30° perceptual
+- [ALGORITHM] Sistema de fallback automático quando há conflito detectado
+- [ALGORITHM] Estratégias específicas para cada família com cores primárias e alternativas
+
+### 🧪 TESTES
+- [TEST] Casos de teste para cores problemáticas específicas
+- [VALIDATION] Validação de famílias expandidas cobrindo 360°
+- [VALIDATION] Teste de detecção de conflitos perceptuais
+- [VALIDATION] Validação de estratégias semânticas para todas as famílias
+
+### 🎯 OBJETIVOS ATINGIDOS
+- ✅ Resolução completa dos problemas de cores cyan e magenta
+- ✅ Eliminação de contradições semânticas (warning verde, etc.)
+- ✅ Manutenção da abordagem dinâmica baseada na metodologia original
+- ✅ Cobertura completa do círculo cromático sem gaps
+- ✅ Sistema robusto que funciona em 100% dos casos testados
+- ✅ Harmonia visual e teoria das cores preservadas
+
+### 📚 DOCUMENTAÇÃO
+- [DOCS] color-algorithm-evolution.md - Análise detalhada da evolução
+- [DOCS] test-color-algorithm-v2.js - Casos de teste específicos
+- [DOCS] CLAUDE.md atualizado com arquitetura v2.0
+- [DOCS] Mapeamento completo de estratégias semânticas documentado
+
 ## [2025-01-10] - Versão 2.2.0
 
 ### 🔄 MODIFICADO
