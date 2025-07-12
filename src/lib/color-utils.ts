@@ -390,32 +390,25 @@ export function generateNeutralPalette(baseColor: string): ColorPalette {
   return palette as ColorPalette;
 }
 
-// Figma Variables Export Interfaces
-export interface FigmaColorValue {
-  r: number; // 0-255
-  g: number; // 0-255
-  b: number; // 0-255
-  a: number; // 0-1
+// W3C Design Tokens Export Interfaces
+export interface W3CColorToken {
+  $type: 'color';
+  $value: string; // hex color
 }
 
-export interface FigmaVariable {
-  name: string;
-  type: 'color';
-  value: FigmaColorValue;
+export interface W3CColorGroup {
+  [shade: string]: W3CColorToken;
 }
 
-export interface FigmaCollection {
-  name: string;
-  variables: FigmaVariable[];
-}
-
-export interface FigmaExport {
-  version: string;
-  metadata: {
-    generator: string;
-    timestamp: string;
+export interface W3CDesignTokens {
+  Colors: {
+    Primary: W3CColorGroup;
+    Success: W3CColorGroup;
+    Warning: W3CColorGroup;
+    Error: W3CColorGroup;
+    Info: W3CColorGroup;
+    Neutral: W3CColorGroup;
   };
-  collections: FigmaCollection[];
 }
 
 export interface ExportPalettes {
@@ -427,61 +420,38 @@ export interface ExportPalettes {
   neutral: ColorPalette;
 }
 
-// Convert hex color to Figma RGBA format
-function hexToFigmaColor(hex: string): FigmaColorValue {
-  const rgb = hexToRgb(hex);
-  if (!rgb) throw new Error(`Invalid hex color: ${hex}`);
+// Convert single palette to W3C color group
+function paletteToW3CGroup(palette: ColorPalette): W3CColorGroup {
+  const group: W3CColorGroup = {};
   
+  Object.entries(palette).forEach(([shade, hex]) => {
+    group[shade] = {
+      $type: 'color',
+      $value: hex
+    };
+  });
+  
+  return group;
+}
+
+// Main export function for W3C Design Tokens
+export function exportToFigmaJSON(palettes: ExportPalettes): W3CDesignTokens {
   return {
-    r: rgb.r,
-    g: rgb.g,
-    b: rgb.b,
-    a: 1
+    Colors: {
+      Primary: paletteToW3CGroup(palettes.primary),
+      Success: paletteToW3CGroup(palettes.success),
+      Warning: paletteToW3CGroup(palettes.warning),
+      Error: paletteToW3CGroup(palettes.error),
+      Info: paletteToW3CGroup(palettes.info),
+      Neutral: paletteToW3CGroup(palettes.neutral)
+    }
   };
 }
 
-// Convert single palette to Figma variables
-function paletteToFigmaVariables(palette: ColorPalette, groupName: string): FigmaVariable[] {
-  return Object.entries(palette).map(([shade, hex]) => ({
-    name: `${groupName}/${shade}`,
-    type: 'color' as const,
-    value: hexToFigmaColor(hex)
-  }));
-}
-
-// Main export function for Figma Variables
-export function exportToFigmaJSON(palettes: ExportPalettes): FigmaExport {
-  const timestamp = new Date().toISOString();
-  
-  // Convert all palettes to Figma variables
-  const variables: FigmaVariable[] = [
-    ...paletteToFigmaVariables(palettes.primary, 'Primary'),
-    ...paletteToFigmaVariables(palettes.success, 'Success'),
-    ...paletteToFigmaVariables(palettes.warning, 'Warning'),
-    ...paletteToFigmaVariables(palettes.error, 'Error'),
-    ...paletteToFigmaVariables(palettes.info, 'Info'),
-    ...paletteToFigmaVariables(palettes.neutral, 'Neutral')
-  ];
-
-  return {
-    version: '1.0.0',
-    metadata: {
-      generator: 'Color Palette Generator',
-      timestamp
-    },
-    collections: [
-      {
-        name: 'Colors',
-        variables
-      }
-    ]
-  };
-}
-
-// Download JSON file
-export function downloadFigmaJSON(palettes: ExportPalettes, filename: string = 'color-palette-figma.json'): void {
-  const figmaJSON = exportToFigmaJSON(palettes);
-  const jsonString = JSON.stringify(figmaJSON, null, 2);
+// Download W3C Design Tokens JSON file
+export function downloadFigmaJSON(palettes: ExportPalettes, filename: string = 'design-tokens.json'): void {
+  const designTokens = exportToFigmaJSON(palettes);
+  const jsonString = JSON.stringify(designTokens, null, 2);
   
   const blob = new Blob([jsonString], { type: 'application/json' });
   const url = URL.createObjectURL(blob);

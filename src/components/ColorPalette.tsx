@@ -196,7 +196,7 @@ export default function ColorPalette() {
       neutral: neutralPalette
     };
     
-    downloadFigmaJSON(exportPalettes, 'color-palette-figma.json');
+    downloadFigmaJSON(exportPalettes, 'design-tokens.json');
   };
 
   return (
@@ -235,8 +235,8 @@ export default function ColorPalette() {
         {/* Export Section */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
           <div>
-            <h3 className="text-sm font-medium text-gray-900 mb-1">Export to Figma</h3>
-            <p className="text-xs text-gray-600">Download JSON file compatible with Figma variable import plugins</p>
+            <h3 className="text-sm font-medium text-gray-900 mb-1">Export Design Tokens</h3>
+            <p className="text-xs text-gray-600">Download W3C Design Tokens JSON compatible with Figma plugins (Tokens Studio, etc.)</p>
           </div>
           <button
             onClick={handleExportToFigma}
