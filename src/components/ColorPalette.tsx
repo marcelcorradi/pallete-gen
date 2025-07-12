@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { generatePalette, generateSemanticColors, generateSemanticColor, generateNeutralPalette, ColorPalette as PaletteType } from '@/lib/color-utils';
+import { generatePalette, generateSemanticColors, generateSemanticColor, generateNeutralPalette, ColorPalette as PaletteType, downloadFigmaJSON, ExportPalettes } from '@/lib/color-utils';
 
 interface ColorPaletteProps {
   title: string;
@@ -185,6 +185,20 @@ export default function ColorPalette() {
     setSemanticColors(prev => ({ ...prev, info: newInfoColor }));
   };
 
+  // Export function for Figma JSON
+  const handleExportToFigma = () => {
+    const exportPalettes: ExportPalettes = {
+      primary: palette,
+      success: semanticColors.success,
+      warning: semanticColors.warning,
+      error: semanticColors.error,
+      info: semanticColors.info,
+      neutral: neutralPalette
+    };
+    
+    downloadFigmaJSON(exportPalettes, 'color-palette-figma.json');
+  };
+
   return (
     <div className="max-w-7xl mx-auto p-4 sm:p-6">
       <div className="mb-6 sm:mb-8">
@@ -216,6 +230,23 @@ export default function ColorPalette() {
               placeholder="#3b82f6"
             />
           </div>
+        </div>
+        
+        {/* Export Section */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div>
+            <h3 className="text-sm font-medium text-gray-900 mb-1">Export to Figma</h3>
+            <p className="text-xs text-gray-600">Download JSON file compatible with Figma variable import plugins</p>
+          </div>
+          <button
+            onClick={handleExportToFigma}
+            className="inline-flex items-center px-4 py-2.5 sm:px-4 sm:py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors touch-manipulation min-h-[44px] sm:min-h-[auto] w-full sm:w-auto justify-center sm:justify-start"
+          >
+            <svg className="w-5 h-5 sm:w-4 sm:h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Export JSON
+          </button>
         </div>
       </div>
 

@@ -390,3 +390,119 @@ export function generateNeutralPalette(baseColor: string): ColorPalette {
   return palette as ColorPalette;
 }
 
+// Figma Variables Export Interfaces
+export interface FigmaColorValue {
+  r: number; // 0-255
+  g: number; // 0-255
+  b: number; // 0-255
+  a: number; // 0-1
+}
+
+export interface FigmaVariable {
+  name: string;
+  type: 'color';
+  value: FigmaColorValue;
+}
+
+export interface FigmaMode {
+  name: string;
+  variables: FigmaVariable[];
+}
+
+export interface FigmaCollection {
+  name: string;
+  modes: FigmaMode[];
+}
+
+export interface FigmaExport {
+  version: string;
+  metadata: {
+    generator: string;
+    timestamp: string;
+  };
+  collections: FigmaCollection[];
+}
+
+export interface ExportPalettes {
+  primary: ColorPalette;
+  success: ColorPalette;
+  warning: ColorPalette;
+  error: ColorPalette;
+  info: ColorPalette;
+  neutral: ColorPalette;
+}
+
+// Convert hex color to Figma RGBA format
+function hexToFigmaColor(hex: string): FigmaColorValue {
+  const rgb = hexToRgb(hex);
+  if (!rgb) throw new Error(`Invalid hex color: ${hex}`);
+  
+  return {
+    r: rgb.r,
+    g: rgb.g,
+    b: rgb.b,
+    a: 1
+  };
+}
+
+// Convert single palette to Figma variables
+function paletteToFigmaVariables(palette: ColorPalette, groupName: string): FigmaVariable[] {
+  return Object.entries(palette).map(([shade, hex]) => ({
+    name: `${groupName}/${shade}`,
+    type: 'color' as const,
+    value: hexToFigmaColor(hex)
+  }));
+}
+
+// Main export function for Figma Variables
+export function exportToFigmaJSON(palettes: ExportPalettes): FigmaExport {
+  const timestamp = new Date().toISOString();
+  
+  // Convert all palettes to Figma variables
+  const variables: FigmaVariable[] = [
+    ...paletteToFigmaVariables(palettes.primary, 'Primary'),
+    ...paletteToFigmaVariables(palettes.success, 'Success'),
+    ...paletteToFigmaVariables(palettes.warning, 'Warning'),
+    ...paletteToFigmaVariables(palettes.error, 'Error'),
+    ...paletteToFigmaVariables(palettes.info, 'Info'),
+    ...paletteToFigmaVariables(palettes.neutral, 'Neutral')
+  ];
+
+  return {
+    version: '1.0.0',
+    metadata: {
+      generator: 'Color Palette Generator',
+      timestamp
+    },
+    collections: [
+      {
+        name: 'Colors',
+        modes: [
+          {
+            name: 'Default',
+            variables
+          }
+        ]
+      }
+    ]
+  };
+}
+
+// Download JSON file
+export function downloadFigmaJSON(palettes: ExportPalettes, filename: string = 'color-palette-figma.json'): void {
+  const figmaJSON = exportToFigmaJSON(palettes);
+  const jsonString = JSON.stringify(figmaJSON, null, 2);
+  
+  const blob = new Blob([jsonString], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  
+  URL.revokeObjectURL(url);
+}
+

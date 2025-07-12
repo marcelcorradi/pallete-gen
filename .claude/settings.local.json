@@ -20,7 +20,10 @@
       "Bash(node:*)",
       "Bash(npm run lint)",
       "Bash(npx next lint:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "WebFetch(domain:docs.tokens.studio)",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:thedesignsystem.guide)"
     ],
     "deny": []
   }

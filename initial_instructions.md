@@ -47,15 +47,16 @@
 
 ### 📖 DOCUMENTOS ESSENCIAIS:
 1. **initial_instructions.md** (este arquivo)
-2. **CLAUDE.md** - Configurações específicas do projeto
+2. **CLAUDE.md** - Configurações específicas do projeto (atualize-o se necessário)
 3. **architecture.md** - Arquitetura técnica detalhada
-4. **color_theory.md** - Teoria das cores e algoritmos
-5. **accessibility_guidelines.md** - Diretrizes de acessibilidade
-6. **changelog.md** - Histórico de mudanças
-7. **common_errors.md** - Problemas recorrentes e soluções
+4. **metodologiaCores.md** - Teoria das cores e algoritmos
+5. **/changelog/** - Pasta com histórico de mudanças
+6. **common_errors.md** - Problemas recorrentes e soluções
+
+SE ALGUM DESSES ARQUIVOS NÃO EXISTIREM? CRIE-OS APÓS ENTENDER O PROJETO E MANTENHA-OS ATUALIZADO SEMPRE.
 
 ### 🔍 RESEARCH OBRIGATÓRIO:
-- [ ] Consultar Context7 MCP server documentation
+- [ ] Consultar Context7 MCP server documentation sempre
 - [ ] Revisar https://colors.eva.design funcionamento
 - [ ] Estudar sistema de cores Tailwind CSS (50-950)
 - [ ] Verificar WCAG guidelines para contraste
@@ -107,6 +108,10 @@
 ---
 
 ## 📊 SISTEMA DE CHANGELOG (OBRIGATÓRIO)
+
+IMPORTANTE: O CHANGELOG DEVE FICAR ORGANIZADO EM UMA PASTA ESPECÍFICA, CASO NÃO EXISTA CRIAR.
+
+SE HOUVER APENAS UM ARQUIVO CHANGELOG.MD COM TODOS OS LOGS, DEVE LER, DIVIDIR EM ARQUIVOS POR RELEASES DENTRO DESSA PASTA DE CHANGELOG DE FORMA ORGANIZADA.
 
 ### 📝 FORMATO PADRONIZADO:
 ```markdown
@@ -162,13 +167,13 @@
 ## 📈 WORKFLOW ESTRUTURADO (OBRIGATÓRIO)
 
 ### 🔄 PROCESSO PASSO-A-PASSO:
-1. **Análise** (10 min) → Entender requisito completamente
-2. **Research** (15 min) → Context7 + documentação relevante
-3. **Design** (20 min) → Arquitetura e fluxo da solução
-4. **Implementação** (60 min) → Código com qualidade
-5. **Testes** (15 min) → Validação funcional e acessibilidade
-6. **Documentação** (10 min) → Changelog e docs técnicas
-7. **Validação WSL** (5 min) → Teste no ambiente real
+1. **Análise** → Entender requisito completamente
+2. **Research** → Context7 + documentação relevante
+3. **Design** → Arquitetura e fluxo da solução
+4. **Implementação** → Código com qualidade
+5. **Testes** → Validação funcional e acessibilidade
+6. **Documentação** → Changelog e docs técnicas
+7. **Validação WSL** → Teste no ambiente real
 
 ### 🎯 CHECKPOINTS DE VALIDAÇÃO:
 - [ ] **Checkpoint 1**: Análise aprovada?
