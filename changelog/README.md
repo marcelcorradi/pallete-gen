@@ -6,6 +6,7 @@ Este diretório contém o histórico de versões organizado seguindo o padrão d
 
 Cada arquivo representa uma versão específica:
 
+- `v2.5.1.md` - Correção formato JSON Figma (sem modes)
 - `v2.5.0.md` - Exportação para Figma Variables (JSON)
 - `v2.4.0.md` - Layout responsivo mobile-first
 - `v2.3.0.md` - Algoritmo de cores semânticas v2.0 

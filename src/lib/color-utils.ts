@@ -404,14 +404,9 @@ export interface FigmaVariable {
   value: FigmaColorValue;
 }
 
-export interface FigmaMode {
-  name: string;
-  variables: FigmaVariable[];
-}
-
 export interface FigmaCollection {
   name: string;
-  modes: FigmaMode[];
+  variables: FigmaVariable[];
 }
 
 export interface FigmaExport {
@@ -477,12 +472,7 @@ export function exportToFigmaJSON(palettes: ExportPalettes): FigmaExport {
     collections: [
       {
         name: 'Colors',
-        modes: [
-          {
-            name: 'Default',
-            variables
-          }
-        ]
+        variables
       }
     ]
   };

@@ -23,7 +23,8 @@
       "Bash(npm install:*)",
       "WebFetch(domain:docs.tokens.studio)",
       "WebFetch(domain:www.figma.com)",
-      "WebFetch(domain:thedesignsystem.guide)"
+      "WebFetch(domain:thedesignsystem.guide)",
+      "WebFetch(domain:github.com)"
     ],
     "deny": []
   }
